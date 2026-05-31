@@ -219,6 +219,18 @@ export default function App() {
   const [autoConectar,   setAutoConectar]   = useState(leerAutoConectarInicial);
   const [cerrandoSesion, setCerrandoSesion] = useState(false);
   const [totalInvertido, setTotalInvertido] = useState(null);
+  const [tema,           setTema]           = useState(() => localStorage.getItem("tema") || "auto");
+
+  useEffect(() => {
+    const docEl = document.documentElement;
+    if (tema === "auto") {
+      docEl.setAttribute("data-theme", "");
+      localStorage.removeItem("tema");
+    } else {
+      docEl.setAttribute("data-theme", tema);
+      localStorage.setItem("tema", tema);
+    }
+  }, [tema]);
 
   // ── Toast system ───────────────────────────────────────────────────────────
   const [toasts, setToasts] = useState([]);
@@ -333,6 +345,14 @@ export default function App() {
             <div className="navbar-actions">
               <span className="navbar-hide-tablet" style={st.testnetBadge}>Testnet</span>
 
+              <button
+                onClick={() => setTema(t => t === 'dark' ? 'light' : 'dark')}
+                style={st.langBtn}
+                aria-label={t(tema === 'dark' ? "tema.claro" : "tema.oscuro")}
+              >
+                {tema === 'dark' ? '☀️' : '🌙'}
+              </button>
+
               <BtnFaucet direccion={direccion} />
 
               <button
@@ -379,6 +399,8 @@ export default function App() {
                   onChangelog={() => navigate("/novedades")}
                   onTerminos={() => navigate("/terminos")}
                   onPrivacidad={() => navigate("/privacidad")}
+                  tema={tema}
+                  setTema={setTema}
                 />
               )
             }
@@ -477,7 +499,7 @@ export default function App() {
 }
 
 // ── Landing ──────────────────────────────────────────────────────────────────
-function Landing({ autoConectar, onConectado, onTransparencia, onChangelog, onTerminos, onPrivacidad }) {
+function Landing({ autoConectar, onConectado, onTransparencia, onChangelog, onTerminos, onPrivacidad, tema, setTema }) {
   const { t } = useTranslation();
   const liveStats = useLiveStats();
   const { rate: cetesRate, error: cetesError } = useCetesRate();
@@ -500,6 +522,15 @@ function Landing({ autoConectar, onConectado, onTransparencia, onChangelog, onTe
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <span className="navbar-hide-tablet" style={st.testnetBadge}>Testnet</span>
+          
+          <button
+            onClick={() => setTema(t => t === 'dark' ? 'light' : 'dark')}
+            style={st.langBtn}
+            aria-label={t(tema === 'dark' ? "tema.claro" : "tema.oscuro")}
+          >
+            {tema === 'dark' ? '☀️' : '🌙'}
+          </button>
+
           <button
             onClick={onTransparencia}
             style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.84rem", fontWeight: 500, color: "var(--navy)", padding: "8px 12px" }}
